@@ -4,6 +4,13 @@ config.py
 *.pyc
 *.pyo
 
+# Figures #
+###########
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
 # Compiled source #
 ###################
 *.com

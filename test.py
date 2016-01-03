@@ -23,8 +23,11 @@ product_id = products[0].get('product_id')
 print "products"
 print products
 print ""
-print "product_id:"
-print product_id
+print "products[0]"
+print products[0]
+print products[0]["display_name"]
+#print "product_id:"
+#print product_id
 
 #oauth2credential = OAuth2Credential(
 #        client_id=credentials.get('client_id'),
