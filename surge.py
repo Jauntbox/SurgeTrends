@@ -1,6 +1,7 @@
 import requests
 import math
 import time
+import os.path
 import config as cfg
 
 #Set API keys from configuration file
@@ -74,16 +75,22 @@ print trips
 url = 'https://api.uber.com/v1/estimates/price'
 
 #Set up the output file to store the data
-output_file = open("Surge_data_Jan3_2016.txt", "w")
-output_file.write('{0:50}'.format('Each route has Uber ride types in the order:'))
-for uber_type in uber_types:
-	output_file.write('{0:15}'.format(uber_type))
-output_file.write('\n')
-output_file.write('{0:30}'.format('Time'))
-for trip in trips.keys():
-	output_file.write('{0:30}'.format(trip))
-#output_file.write('{0:30} {1:30} {2:30} {3:30} {4:30} {5:30} {6:30} {7:30} {8:30} '.format("Time", "DNA_to_Marina", "Marina_to_DNA", "Mission_to_Palo_Alto", "Palo_Alto_to_Mission", "Mission_to_Mission", "Marina_to_Marina", "Palo_Alto_to_Palo_Alto", "DNA_to_DNA"))
-output_file.write('\n')
+output_file_name = "Surge_data_Jan6_2016.txt"
+#If the output file already exists, don't write a header and just start appending data to it. If the file
+#does not exist, then create it and put a header on top of it.
+if(not os.path.isfile(output_file_name)):
+	output_file = open(output_file_name, "w")
+	output_file.write('{0:50}'.format('Each route has Uber ride types in the order:'))
+	for uber_type in uber_types:
+		output_file.write('{0:15}'.format(uber_type))
+	output_file.write('\n')
+	output_file.write('{0:30}'.format('Time'))
+	for trip in trips.keys():
+		output_file.write('{0:30}'.format(trip))
+	#output_file.write('{0:30} {1:30} {2:30} {3:30} {4:30} {5:30} {6:30} {7:30} {8:30} '.format("Time", "DNA_to_Marina", "Marina_to_DNA", "Mission_to_Palo_Alto", "Palo_Alto_to_Mission", "Mission_to_Mission", "Marina_to_Marina", "Palo_Alto_to_Palo_Alto", "DNA_to_DNA"))
+	output_file.write('\n')
+else:
+	output_file = open(output_file_name, "a")
 
 #Collect data forever!
 while(True):
