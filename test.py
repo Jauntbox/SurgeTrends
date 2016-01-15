@@ -26,6 +26,8 @@ print ""
 print "products[0]"
 print products[0]
 print products[0]["display_name"]
+print len(products)
+print products[len(products)-1]
 #print "product_id:"
 #print product_id
 

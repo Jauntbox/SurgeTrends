@@ -10,14 +10,9 @@ server_token = cfg.server_token
 #Define the uber types that we'll search for
 uber_types = ['uberX', 'uberXL', 'uberSELECT', 'UberBLACK', 'UberSUV']
 
-#Set up a few start/end locations for different trips:
-
-#Number of locations to be tracked
-#num_trips = 4
-#trips = [None]*num_trips
-
+#Set up a few locations for different trips:
 locations = {}
-locations['DNA'] = {
+locations['DNA_lounge'] = {
 	'latitude': 37.7589,
 	'longitude': -122.4125
 }
@@ -25,49 +20,91 @@ locations['Marina'] = {
 	'latitude': 37.8007,
     'longitude': -122.4447
 }
+locations['Financial_district'] = {
+	'latitude': 37.7960,
+	'longitude': -122.4121
+}
+locations['Union_square'] = {
+	'latitude': 37.7874,
+	'longitude': -122.4104
+}
 locations['Mission'] = {
 	'latitude': 37.7576,
     'longitude': -122.4105
+}
+locations['The_Castro'] = {
+	'latitude': 37.7625,
+	'longitude': -122.4373
+}
+locations['Noe_valley'] = {
+	'latitude': 37.7500,
+	'longitude': -122.4316
+}
+locations['Outer_sunset'] = {
+	'latitude': 37.7621,
+	'longitude': -122.5114
+}
+locations['Dogpatch'] = {
+	'latitude': 37.7604,
+	'longitude': -122.3918
 }
 locations['Palo_Alto'] = {
 	'latitude': 37.4061,
     'longitude': -122.1142
 }
-#locations['SFO'] = {
-#	'latitude': 37.6213,
-#	'longitude': -122.3811
-#}
-#locations['SJC'] = {
-#	'latitude': 37.3664,
-#	'longitude': -121.9257
-#}
+locations['SFO'] = {
+	'latitude': 37.6213,
+	'longitude': -122.3811
+}
+locations['SJC'] = {
+	'latitude': 37.3664,
+	'longitude': -121.9257
+}
 #Template for adding new locations:
 #locations[''] = {
 #	'latitude': 
 #	'longitude':
 #}
 
-#Define the set of path's to collect surge data on
-path_connector = '->' #String that will connect locations in our dictionary, eg. "Mission->Marina"
-#Explicit definition of paths:
-#trips_list = ['DNA'+path_connector+'Marina', 'Marina'+path_connector+'DNA', 'Mission'+path_connector+'Marina', 'Marina'+path_connector+'Mission', 'Mission'+path_connector+'Palo_Alto', 'Marina'+path_connector+'Palo_Alto', 'DNA'+path_connector+'Palo_Alto', 'Palo_Alto'+path_connector+'Mission', 'Palo_Alto'+path_connector+'Marina', 'Palo_Alto'+path_connector+'DNA']
+#In order to get a surge multiplier, we need to enter a start/end location for the trip, however
+#the surge price only depends on your starting location (as far as I can tell). I'll keep in
+#the functionality of looking at arbitrary trips in case this changes and for verification
+#purposes, which can be enables by setting connect_different_locations to True.
+connect_different_locations = False
 
-#Connect all of the endpoints specified in the locations list:
-trips_list = []
-for start_location in locations:
-	for end_location in locations:
-		trips_list.append(start_location+path_connector+end_location)
-
-#Set up the dictionary that will hold all the trip and surge multiplier data:
 trips = {}
-for trip in trips_list:
-	trips[trip] = {
-		'start_latitude': locations[trip[0:trip.find(path_connector)]]['latitude'],
-		'start_longitude': locations[trip[0:trip.find(path_connector)]]['longitude'],
-		'end_latitude': locations[trip[trip.find(path_connector)+len(path_connector):len(trip)]]['latitude'],
-		'end_longitude': locations[trip[trip.find(path_connector)+len(path_connector):len(trip)]]['longitude'],
-		'surge_data': {}
-	}
+if(connect_different_locations):
+	#Define the set of path's to collect surge data on
+	path_connector = '->' #String that will connect locations in our dictionary, eg. "Mission->Marina"
+	#Explicit definition of paths:
+	#trips_list = ['DNA'+path_connector+'Marina', 'Marina'+path_connector+'DNA', 'Mission'+path_connector+'Marina', 'Marina'+path_connector+'Mission', 'Mission'+path_connector+'Palo_Alto', 'Marina'+path_connector+'Palo_Alto', 'DNA'+path_connector+'Palo_Alto', 'Palo_Alto'+path_connector+'Mission', 'Palo_Alto'+path_connector+'Marina', 'Palo_Alto'+path_connector+'DNA']
+
+	#Connect all of the endpoints specified in the locations list:
+	trips_list = []
+	for start_location in locations:
+		for end_location in locations:
+			trips_list.append(start_location+path_connector+end_location)
+
+	#Set up the dictionary that will hold all the trip and surge multiplier data:
+	for trip in trips_list:
+		trips[trip] = {
+			'start_latitude': locations[trip[0:trip.find(path_connector)]]['latitude'],
+			'start_longitude': locations[trip[0:trip.find(path_connector)]]['longitude'],
+			'end_latitude': locations[trip[trip.find(path_connector)+len(path_connector):len(trip)]]['latitude'],
+			'end_longitude': locations[trip[trip.find(path_connector)+len(path_connector):len(trip)]]['longitude'],
+			'surge_data': {}
+		}
+#Otherwise just examine trips from the same starting/ending points:
+else:
+	for loc in locations:
+		trips[loc] = {
+			'start_latitude': locations[loc]['latitude'],
+			'start_longitude': locations[loc]['longitude'],
+			'end_latitude': locations[loc]['latitude'],
+			'end_longitude': locations[loc]['longitude'],
+			'surge_data': {}
+		}
+
 print trips
 
 #Specify the url to query for the API request
@@ -75,7 +112,7 @@ print trips
 url = 'https://api.uber.com/v1/estimates/price'
 
 #Set up the output file to store the data
-output_file_name = "Surge_data_Jan6_2016.txt"
+output_file_name = "Surge_data_Jan15_2016.txt"
 #If the output file already exists, don't write a header and just start appending data to it. If the file
 #does not exist, then create it and put a header on top of it.
 if(not os.path.isfile(output_file_name)):
