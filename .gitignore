@@ -36,6 +36,7 @@ config.py
 # Logs and databases #
 ######################
 *.txt
+*.json
 *.log
 *.sql
 *.sqlite

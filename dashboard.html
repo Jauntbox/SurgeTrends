@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style> /* set the CSS */
+
+body { font: 12px Arial;}
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+</style>
+
+<head>
+    <meta charset="utf-8">
+    <title>SurgeTrends Dashboard</title>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+</head>
+
+<body>
+    <h1>SurgeTrends Dashboard</h1>
+    <script type="text/javascript">
+        //Width and height
+        var margin = {top: 30, right: 20, bottom: 30, left: 50},
+            width = 600 - margin.left - margin.right,
+            height = 270 - margin.top - margin.bottom;
+
+        //d3.select("body").append("p").text("New paragraph!");
+
+        d3.json("Surge_data_Jan15_2016.json", function(data) {
+            console.log(data);
+            console.log(data[0]);
+
+            // Adds the svg canvas
+            var canvas = d3.select("body")
+                .append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                    .attr("transform", 
+                          "translate(" + margin.left + "," + margin.top + ")");
+
+            // Set the ranges
+            var x = d3.time.scale().range([0, width]);
+            var y = d3.scale.linear().range([height, 0]);
+
+            // Define the axes
+            var xAxis = d3.svg.axis().scale(x)
+                .orient("bottom")
+                .ticks(10);
+
+            var yAxis = d3.svg.axis().scale(y)
+                .orient("left").ticks(5);
+
+            x.domain(d3.extent(data, function(d) { return d3.time.format("%Y-%m-%d %H:%M:%S").parse(d.Time); }));
+            y.domain([0, d3.max(data, function(d) { return d.Palo_Alto.uberX; })]);
+            
+            canvas.selectAll("dot")
+               .data(data)
+               .enter()
+               .append("circle")
+               .attr("cx", function(d,i) {
+                    //console.log(d,i);
+                    return x(d3.time.format("%Y-%m-%d %H:%M:%S").parse(d.Time));
+               })
+               .attr("cy", function(d,i) {
+                    //console.log(d.Palo_Alto.uberX, y(d.Palo_Alto.uberX));
+                    return y(d.Palo_Alto.uberX);
+               })
+               .attr("r", 1.0);
+
+            // Add the X Axis
+            canvas.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            // Add the Y Axis
+            canvas.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+            
+        });
+
+    </script>
+</body>

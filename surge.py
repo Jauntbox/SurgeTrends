@@ -112,7 +112,7 @@ print trips
 url = 'https://api.uber.com/v1/estimates/price'
 
 #Set up the output file to store the data
-output_file_name = "Surge_data_Jan15_2016.txt"
+output_file_name = "Surge_data_Jan16_2016.txt"
 #If the output file already exists, don't write a header and just start appending data to it. If the file
 #does not exist, then create it and put a header on top of it.
 if(not os.path.isfile(output_file_name)):
